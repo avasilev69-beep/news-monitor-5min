@@ -1,0 +1,58 @@
+ticker,name,category,exchange
+4GLD,Xetra-Gold ETC,Anchor,Deutsche BГ¶rse
+VZLC,WisdomTree Physical Silver ETC,Silver,Deutsche BГ¶rse
+WSLV,WisdomTree Core Physical Silver ETC,Silver,Deutsche BГ¶rse
+IWDA,iShares Core MSCI World UCITS ETF,Index,Deutsche BГ¶rse
+SPPW,SPDR S&P 500 UCITS ETF,Index,Deutsche BГ¶rse
+EXXT,iShares NASDAQ-100 UCITS ETF,Index,Deutsche BГ¶rse
+DBXD,Xtrackers DAX UCITS ETF,Index,Deutsche BГ¶rse
+SAP,SAP SE,Low Risk,Deutsche BГ¶rse
+SIE,Siemens AG,Low Risk,Deutsche BГ¶rse
+AIR,Airbus SE,Low Risk,Deutsche BГ¶rse
+ALV,Allianz SE,Low Risk,Deutsche BГ¶rse
+MC,LVMH Moet Hennessy Louis Vuitton,Low Risk,Deutsche BГ¶rse
+KER,Kering SA,Low Risk,Deutsche BГ¶rse
+ASML,ASML Holding NV,Medium Risk,Deutsche BГ¶rse
+NVD,NVIDIA Corporation,Medium Risk,Deutsche BГ¶rse
+L0CK,iShares Automation & Robotics UCITS ETF,Medium Risk,Deutsche BГ¶rse
+ADBE,Adobe Inc.,Medium Risk,Deutsche BГ¶rse
+SPOT,Spotify Technology SA,Medium Risk,Deutsche BГ¶rse
+XLFNT,Financial Select Sector ETF,Index,NASDAQ
+VZ,Verizon Communications,Defensive,NYSE
+JNJ,Johnson & Johnson,Defensive,NYSE
+TRV,The Travelers Companies,Defensive,NYSE
+RPRX,Royalty Pharma plc,Defensive,NASDAQ
+AEP,American Electric Power,Defensive,NASDAQ
+DUK,Duke Energy Corp.,Defensive,NYSE
+IDA,IDACORP Inc.,Defensive,NYSE
+LNT,Alliant Energy Corp.,Defensive,NASDAQ
+IBKR,Interactive Brokers Group Cl A,Blue Chip,NASDAQ
+GEV,GE Vernova Inc.,Blue Chip,NYSE
+DRS,Leonardo DRS Inc.,Blue Chip,NASDAQ
+META,Meta Platforms Inc.,Medium Risk,NASDAQ
+AMAT,Applied Materials Inc.,Medium Risk,NASDAQ
+AXON,Axon Enterprise Inc.,Medium Risk,NASDAQ
+HOOD,Robinhood Markets Cl A,Medium Risk,NASDAQ
+SNOW,Snowflake Inc.,Medium Risk,NYSE
+PATH,UiPath Inc.,Medium Risk,NYSE
+EXEL,Exelixis Inc.,Medium Risk,NASDAQ
+INCY,Incyte Corp.,Medium Risk,NASDAQ
+ILMN,Illumina Inc.,Medium Risk,NASDAQ
+BPOP,Popular Inc.,Medium Risk,NASDAQ
+FHB,First Hawaiian Inc.,Medium Risk,NASDAQ
+SPNT,SiriusPoint Ltd.,Medium Risk,NYSE
+SLDE,Slide Insurance Holdings,Medium Risk,NASDAQ
+MD,Pediatrix Medical Group,Medium Risk,NYSE
+AHR,American Healthcare REIT,Medium Risk,NYSE
+IONQ,IonQ Inc.,Speculative,NYSE
+RGTI,Rigetti Computing,Speculative,NASDAQ
+CRDO,Credo Technology Group,Speculative,NASDAQ
+ALAB,Astera Labs Inc.,Speculative,NASDAQ
+CRWV,CoreWeave Inc.,Speculative,NASDAQ
+NBIS,Nebius Group NV,Speculative,NASDAQ
+IREN,Iris Energy Ltd,Speculative,NASDAQ
+HUT,Hut 8 Corp,Speculative,NASDAQ
+KEEL,Keel Infrastructure Corp,Speculative,NASDAQ
+MRNA,Moderna Inc.,Speculative,NASDAQ
+SLDB,Solid Biosciences,Speculative,NASDAQ
+ATAI,atai Life Sciences,Speculative,NASDAQ
