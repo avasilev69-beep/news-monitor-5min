@@ -331,8 +331,8 @@ class NewsMonitor:
         state.tickers_failed = []
 
         # Format date strings for Finnhub API (YYYY-MM-DD)
-        from_date = five_min_ago.strftime("%Y-%m-%d")
-        to_date = now.strftime("%Y-%m-%d")
+        from_date = now.strftime("%Y-%m-%d")
+        to_date = (now + timedelta(days=1)).strftime("%Y-%m-%d")
 
         # Create tasks for all tickers
         tasks = [
