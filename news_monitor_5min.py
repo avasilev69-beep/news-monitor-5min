@@ -14,6 +14,7 @@ Architecture:
 """
 
 import asyncio
+import html
 import json
 import logging
 import os
@@ -21,7 +22,6 @@ import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
-import html
 
 import aiohttp
 
@@ -135,7 +135,6 @@ class StateManager:
     def save(self, state: MonitorState) -> None:
         """Save state to file atomically."""
         try:
-            # Write to temp file first, then rename (atomic operation)
             temp_file = self.state_file.with_suffix(".tmp")
             with open(temp_file, "w", encoding="utf-8") as f:
                 json.dump(state.to_dict(), f, indent=2)
@@ -158,12 +157,10 @@ class AsyncFinnhubClient:
         self.session: Optional[aiohttp.ClientSession] = None
 
     async def __aenter__(self):
-        """Context manager entry."""
         self.session = aiohttp.ClientSession()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        """Context manager exit."""
         if self.session:
             await self.session.close()
 
@@ -172,17 +169,6 @@ class AsyncFinnhubClient:
     ) -> list[NewsArticle]:
         """
         Fetch company news for a symbol within date range.
-
-        Args:
-            symbol: Stock ticker symbol
-            from_date: Start date (YYYY-MM-DD)
-            to_date: End date (YYYY-MM-DD)
-
-        Returns:
-            List of NewsArticle objects
-
-        Raises:
-            Exception: If API call fails after retries
         """
         url = f"{FINNHUB_BASE_URL}/company-news"
         params = {
@@ -199,7 +185,6 @@ class AsyncFinnhubClient:
                         url, params=params, timeout=aiohttp.ClientTimeout(total=REQUEST_TIMEOUT)
                     ) as response:
                         if response.status == 200:
-                            if response.status == 200:
                             data = await response.json()
                             articles = [
                                 NewsArticle(
@@ -214,7 +199,6 @@ class AsyncFinnhubClient:
                             return articles
 
                         elif response.status == 429:
-                            # Rate limited - implement exponential backoff
                             delay = RETRY_BASE_DELAY * (2 ** attempt)
                             logger.warning(
                                 f"Rate limited for {symbol}, attempt {attempt + 1}/{RETRY_MAX_ATTEMPTS}, "
@@ -265,15 +249,6 @@ class TelegramNotifier:
         self.session = session
 
     async def send_message(self, text: str) -> bool:
-        """
-        Send message to Telegram channel.
-
-        Args:
-            text: Message text
-
-        Returns:
-            True if successful, False otherwise
-        """
         url = f"https://api.telegram.org/bot{self.bot_token}/sendMessage"
         payload = {
             "chat_id": self.chat_id,
@@ -315,46 +290,32 @@ class NewsMonitor:
         self.semaphore = semaphore
 
     async def run(self, tickers: list[str]) -> None:
-        """
-        Execute news monitoring cycle for all tickers.
-
-        Args:
-            tickers: List of stock symbols to monitor
-        """
         logger.info(f"Starting news monitoring cycle for {len(tickers)} tickers")
 
-        # Load previous state
         state = self.state_manager.load()
         now = datetime.now(timezone.utc)
-        five_min_ago = now - timedelta(minutes=5)
 
-        # Update state metadata
         state.last_check = now.isoformat()
         state.tickers_processed = len(tickers)
         state.tickers_succeeded = 0
         state.tickers_failed = []
 
-        # Format date strings for Finnhub API (YYYY-MM-DD)
         from_date = now.strftime("%Y-%m-%d")
         to_date = (now + timedelta(days=1)).strftime("%Y-%m-%d")
 
-        # Create tasks for all tickers
         tasks = [
             self._process_ticker(ticker, from_date, to_date, state)
             for ticker in tickers
         ]
 
-        # Execute all tasks concurrently (semaphore limits concurrency)
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
-        # Count successes and failures
         for result in results:
             if isinstance(result, Exception):
                 logger.error(f"Task failed: {result}")
             elif result is True:
                 state.tickers_succeeded += 1
 
-        # Save updated state
         logger.info(
             f"Monitoring cycle complete: {state.tickers_succeeded}/{state.tickers_processed} tickers succeeded"
         )
@@ -366,34 +327,18 @@ class NewsMonitor:
     async def _process_ticker(
         self, ticker: str, from_date: str, to_date: str, state: MonitorState
     ) -> bool:
-        """
-        Process a single ticker: fetch news, filter, notify.
-
-        Args:
-            ticker: Stock symbol
-            from_date: Start date (YYYY-MM-DD)
-            to_date: End date (YYYY-MM-DD)
-            state: Current monitoring state
-
-        Returns:
-            True if successful, False otherwise
-        """
         try:
-            # Initialize ticker's seen_news_ids if not present
             if ticker not in state.seen_news_ids:
                 state.seen_news_ids[ticker] = []
 
-            # Fetch news from Finnhub
             articles = await self.finnhub.fetch_company_news(ticker, from_date, to_date)
 
-            # Filter new articles (not seen before)
             new_articles = [
                 article
                 for article in articles
                 if article.id not in state.seen_news_ids[ticker]
             ]
 
-            # Send notifications for new articles
             for article in new_articles:
                 published = datetime.fromtimestamp(article.datetime, tz=timezone.utc).strftime("%Y-%m-%d %H:%M")
                 message = (
@@ -404,7 +349,6 @@ class NewsMonitor:
                 sent = await self.telegram.send_message(message)
 
                 if sent:
-                    # Only mark as seen if notification was successful
                     state.seen_news_ids[ticker].append(article.id)
                     logger.debug(f"Notified: {ticker} - {article.headline[:50]}...")
 
@@ -421,18 +365,6 @@ class NewsMonitor:
 # ============================================================================
 
 def load_tickers(tickers_file: Path = TICKERS_FILE) -> list[str]:
-    """
-    Load tickers from file (one per line).
-
-    Args:
-        tickers_file: Path to tickers.txt
-
-    Returns:
-        List of ticker symbols
-
-    Raises:
-        FileNotFoundError: If tickers file not found
-    """
     if not tickers_file.exists():
         logger.error(f"Tickers file not found: {tickers_file}")
         raise FileNotFoundError(f"Missing {tickers_file}")
@@ -452,8 +384,6 @@ def load_tickers(tickers_file: Path = TICKERS_FILE) -> list[str]:
 # ============================================================================
 
 async def main() -> None:
-    """Main entry point for news monitoring."""
-    # Validate environment variables
     if not FINNHUB_API_KEY:
         logger.error("FINNHUB_API_KEY environment variable not set")
         sys.exit(1)
@@ -466,7 +396,6 @@ async def main() -> None:
         logger.error("NEWS_5MIN_TELEGRAM_CHAT_ID environment variable not set")
         sys.exit(1)
 
-    # Load tickers
     try:
         tickers = load_tickers()
     except FileNotFoundError:
@@ -480,10 +409,7 @@ async def main() -> None:
         logger.warning("No tickers to monitor, exiting")
         sys.exit(0)
 
-    # Create semaphore for rate limiting
     semaphore = asyncio.Semaphore(SEMAPHORE_LIMIT)
-
-    # Initialize components
     state_manager = StateManager()
 
     async with aiohttp.ClientSession() as session:
@@ -491,7 +417,6 @@ async def main() -> None:
             telegram_notifier = TelegramNotifier(TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, session)
             monitor = NewsMonitor(finnhub_client, telegram_notifier, state_manager, semaphore)
 
-            # Run monitoring cycle
             try:
                 await monitor.run(tickers)
                 logger.info("News monitoring cycle completed successfully")
