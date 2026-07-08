@@ -199,8 +199,9 @@ class AsyncFinnhubClient:
                         url, params=params, timeout=aiohttp.ClientTimeout(total=REQUEST_TIMEOUT)
                     ) as response:
                         if response.status == 200:
+                            if response.status == 200:
                             data = await response.json()
-                           articles = [
+                            articles = [
                                 NewsArticle(
                                     article_id=str(article.get("id", "")),
                                     headline=article.get("headline", ""),
@@ -209,7 +210,6 @@ class AsyncFinnhubClient:
                                     url=article.get("url", ""),
                                 )
                                 for article in data
-                            ]
                             ]
                             return articles
 
