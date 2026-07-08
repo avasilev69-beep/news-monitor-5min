@@ -1,0 +1,39 @@
+name: News Monitor 5min
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '0 * * * *'   # почасов резервен старт
+
+permissions:
+  contents: write
+
+jobs:
+  run-monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install aiohttp
+
+      - name: Run news monitor
+        env:
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+          NEWS_5MIN_TELEGRAM_BOT_TOKEN: ${{ secrets.NEWS_5MIN_TELEGRAM_BOT_TOKEN }}
+          NEWS_5MIN_TELEGRAM_CHAT_ID: ${{ secrets.NEWS_5MIN_TELEGRAM_CHAT_ID }}
+        run: python news_monitor_5min.py
+
+      - name: Commit updated state
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add state_5min.json
+          git diff --staged --quiet || git commit -m "Update news state [skip ci]"
+          git push
