@@ -21,6 +21,7 @@ import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
+import html
 
 import aiohttp
 
@@ -58,11 +59,12 @@ logger = logging.getLogger(__name__)
 class NewsArticle:
     """Represents a single news article from Finnhub."""
 
-    def __init__(self, article_id: str, headline: str, source: str, datetime_: int):
+    def __init__(self, article_id: str, headline: str, source: str, datetime_: int, url: str):
         self.id = article_id
         self.headline = headline
         self.source = source
         self.datetime = datetime_
+        self.url = url
 
     def __repr__(self) -> str:
         return f"NewsArticle(id={self.id}, headline={self.headline[:50]}...)"
@@ -198,14 +200,16 @@ class AsyncFinnhubClient:
                     ) as response:
                         if response.status == 200:
                             data = await response.json()
-                            articles = [
+                           articles = [
                                 NewsArticle(
                                     article_id=str(article.get("id", "")),
                                     headline=article.get("headline", ""),
                                     source=article.get("source", ""),
                                     datetime_=article.get("datetime", 0),
+                                    url=article.get("url", ""),
                                 )
                                 for article in data
+                            ]
                             ]
                             return articles
 
@@ -391,7 +395,12 @@ class NewsMonitor:
 
             # Send notifications for new articles
             for article in new_articles:
-                message = f"<b>{ticker}</b>: {article.headline}"
+                published = datetime.fromtimestamp(article.datetime, tz=timezone.utc).strftime("%Y-%m-%d %H:%M")
+                message = (
+                    f"<b>{ticker}</b>: {html.escape(article.headline)}\n"
+                    f"Източник: {html.escape(article.source)} · {published} UTC\n"
+                    f"{article.url}"
+                )
                 sent = await self.telegram.send_message(message)
 
                 if sent:
