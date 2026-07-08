@@ -1,7 +1,7 @@
 {
-  "last_check": "2026-07-08T13:07:59.954419+00:00",
-  "tickers_processed": 58,
-  "tickers_succeeded": 58,
+  "last_check": "2026-07-08T13:12:59.386420+00:00",
+  "tickers_processed": 39,
+  "tickers_succeeded": 39,
   "tickers_failed": [],
   "seen_news_ids": {
     "TICKER,NAME,CATEGORY,EXCHANGE": [],
@@ -61,6 +61,76 @@
     "KEEL,KEEL INFRASTRUCTURE CORP,SPECULATIVE,NASDAQ": [],
     "MRNA,MODERNA INC.,SPECULATIVE,NASDAQ": [],
     "SLDB,SOLID BIOSCIENCES,SPECULATIVE,NASDAQ": [],
-    "ATAI,ATAI LIFE SCIENCES,SPECULATIVE,NASDAQ": []
+    "ATAI,ATAI LIFE SCIENCES,SPECULATIVE,NASDAQ": [],
+    "META": [
+      "140839569",
+      "140838945",
+      "140838914",
+      "140838918",
+      "140838931"
+    ],
+    "CRDO": [],
+    "IBKR": [
+      "140838906"
+    ],
+    "VZ": [
+      "140839636"
+    ],
+    "IONQ": [],
+    "RGTI": [],
+    "GEV": [
+      "140839574"
+    ],
+    "AMAT": [
+      "140839975",
+      "140838493"
+    ],
+    "AXON": [
+      "140838913"
+    ],
+    "HOOD": [
+      "140839974",
+      "140839686"
+    ],
+    "ALAB": [
+      "140839026"
+    ],
+    "XLFNT": [],
+    "CRWV": [
+      "140839863"
+    ],
+    "NBIS": [],
+    "IREN": [],
+    "HUT": [],
+    "KEEL": [],
+    "JNJ": [
+      "140839590",
+      "140839793",
+      "140839188",
+      "140837885"
+    ],
+    "TRV": [
+      "140839003"
+    ],
+    "LNT": [],
+    "AEP": [],
+    "DUK": [],
+    "IDA": [],
+    "RPRX": [],
+    "DRS": [],
+    "SNOW": [],
+    "PATH": [],
+    "EXEL": [],
+    "INCY": [],
+    "ILMN": [],
+    "MRNA": [],
+    "BPOP": [],
+    "FHB": [],
+    "SPNT": [],
+    "SLDE": [],
+    "MD": [],
+    "AHR": [],
+    "SLDB": [],
+    "ATAI": []
   }
 }
