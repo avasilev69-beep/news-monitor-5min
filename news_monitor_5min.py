@@ -2,15 +2,9 @@
 """
 News Monitor 5min - Real-time financial news monitoring.
 
-Monitors 100+ financial instruments via Finnhub API and sends
-new news alerts to Telegram every 5 minutes with async request handling.
-
-Architecture:
-- Async/await (asyncio + aiohttp)
-- Semaphore-based rate limiting (10 concurrent requests)
-- State persistence (JSON tracking of seen articles)
-- Structured logging (production-ready)
-- Error handling with exponential backoff
+Monitors US tickers via Finnhub (per-company news) plus a general/macro
+news stream (keyword-filtered, not tied to a ticker), and sends new
+alerts to Telegram every 5 minutes.
 """
 
 import asyncio
@@ -25,136 +19,105 @@ from typing import Optional
 
 import aiohttp
 
-# Configuration
 FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY")
 TELEGRAM_BOT_TOKEN = os.getenv("NEWS_5MIN_TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("NEWS_5MIN_TELEGRAM_CHAT_ID")
+MACRO_CHAT_ID = os.getenv("NEWS_5MIN_TELEGRAM_MACRO_CHAT_ID")
 
 FINNHUB_BASE_URL = "https://finnhub.io/api/v1"
-TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}"
 
 STATE_FILE = Path("state_5min.json")
 TICKERS_FILE = Path("tickers.txt")
+KEYWORDS_FILE = Path("keywords.txt")
 
-# Rate limiting and timeouts
 SEMAPHORE_LIMIT = 10
 REQUEST_TIMEOUT = 10
 RETRY_MAX_ATTEMPTS = 3
 RETRY_BASE_DELAY = 1
 
-# Logging
 LOG_FORMAT = "%(asctime)s | %(levelname)-5s | %(name)s | %(message)s"
-logging.basicConfig(
-    level=logging.INFO,
-    format=LOG_FORMAT,
-    stream=sys.stdout,
-)
+logging.basicConfig(level=logging.INFO, format=LOG_FORMAT, stream=sys.stdout)
 logger = logging.getLogger(__name__)
 
 
-# ============================================================================
-# Type Definitions and Models
-# ============================================================================
-
 class NewsArticle:
-    """Represents a single news article from Finnhub."""
-
-    def __init__(self, article_id: str, headline: str, source: str, datetime_: int, url: str):
+    def __init__(self, article_id, headline, source, datetime_, url):
         self.id = article_id
         self.headline = headline
         self.source = source
         self.datetime = datetime_
         self.url = url
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         return f"NewsArticle(id={self.id}, headline={self.headline[:50]}...)"
 
 
 class MonitorState:
-    """Persistent state tracking for news monitoring."""
-
     def __init__(self):
-        self.last_check: str = ""
-        self.tickers_processed: int = 0
-        self.tickers_succeeded: int = 0
-        self.tickers_failed: list[str] = []
-        self.seen_news_ids: dict[str, list[str]] = {}
+        self.last_check = ""
+        self.tickers_processed = 0
+        self.tickers_succeeded = 0
+        self.tickers_failed = []
+        self.seen_news_ids = {}
+        self.general_seen_ids = []
 
-    def to_dict(self) -> dict:
-        """Serialize state to dictionary."""
+    def to_dict(self):
         return {
             "last_check": self.last_check,
             "tickers_processed": self.tickers_processed,
             "tickers_succeeded": self.tickers_succeeded,
             "tickers_failed": self.tickers_failed,
             "seen_news_ids": self.seen_news_ids,
+            "general_seen_ids": self.general_seen_ids,
         }
 
     @staticmethod
-    def from_dict(data: dict) -> "MonitorState":
-        """Deserialize state from dictionary."""
+    def from_dict(data):
         state = MonitorState()
         state.last_check = data.get("last_check", "")
         state.tickers_processed = data.get("tickers_processed", 0)
         state.tickers_succeeded = data.get("tickers_succeeded", 0)
         state.tickers_failed = data.get("tickers_failed", [])
         state.seen_news_ids = data.get("seen_news_ids", {})
+        state.general_seen_ids = data.get("general_seen_ids", [])
         return state
 
 
-# ============================================================================
-# State Management
-# ============================================================================
-
 class StateManager:
-    """Handles persistent state (JSON) with validation and recovery."""
-
-    def __init__(self, state_file: Path = STATE_FILE):
+    def __init__(self, state_file=STATE_FILE):
         self.state_file = state_file
 
-    def load(self) -> MonitorState:
-        """Load state from file, handle corruption gracefully."""
+    def load(self):
         if not self.state_file.exists():
             logger.info(f"State file not found: {self.state_file}, creating fresh state")
             return MonitorState()
-
         try:
             with open(self.state_file, "r", encoding="utf-8") as f:
                 data = json.load(f)
             logger.info(f"Loaded state from {self.state_file}")
             return MonitorState.from_dict(data)
         except json.JSONDecodeError:
-            logger.warning(
-                f"State file corrupted or invalid JSON: {self.state_file}, creating fresh state"
-            )
+            logger.warning("State file corrupted, creating fresh state")
             return MonitorState()
         except Exception as e:
             logger.error(f"Error loading state: {e}, creating fresh state")
             return MonitorState()
 
-    def save(self, state: MonitorState) -> None:
-        """Save state to file atomically."""
+    def save(self, state):
         try:
             temp_file = self.state_file.with_suffix(".tmp")
             with open(temp_file, "w", encoding="utf-8") as f:
                 json.dump(state.to_dict(), f, indent=2)
             temp_file.replace(self.state_file)
-            logger.debug(f"State saved to {self.state_file}")
         except Exception as e:
             logger.error(f"Error saving state: {e}")
 
 
-# ============================================================================
-# Finnhub API Client (Async)
-# ============================================================================
-
 class AsyncFinnhubClient:
-    """Async HTTP client for Finnhub API with rate limiting and retry logic."""
-
-    def __init__(self, api_key: str, semaphore: asyncio.Semaphore):
+    def __init__(self, api_key, semaphore):
         self.api_key = api_key
         self.semaphore = semaphore
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.session = None
 
     async def __aenter__(self):
         self.session = aiohttp.ClientSession()
@@ -164,20 +127,7 @@ class AsyncFinnhubClient:
         if self.session:
             await self.session.close()
 
-    async def fetch_company_news(
-        self, symbol: str, from_date: str, to_date: str
-    ) -> list[NewsArticle]:
-        """
-        Fetch company news for a symbol within date range.
-        """
-        url = f"{FINNHUB_BASE_URL}/company-news"
-        params = {
-            "symbol": symbol,
-            "from": from_date,
-            "to": to_date,
-            "token": self.api_key,
-        }
-
+    async def _get_with_retry(self, url, params, context_label):
         for attempt in range(RETRY_MAX_ATTEMPTS):
             try:
                 async with self.semaphore:
@@ -185,77 +135,70 @@ class AsyncFinnhubClient:
                         url, params=params, timeout=aiohttp.ClientTimeout(total=REQUEST_TIMEOUT)
                     ) as response:
                         if response.status == 200:
-                            data = await response.json()
-                            articles = [
-                                NewsArticle(
-                                    article_id=str(article.get("id", "")),
-                                    headline=article.get("headline", ""),
-                                    source=article.get("source", ""),
-                                    datetime_=article.get("datetime", 0),
-                                    url=article.get("url", ""),
-                                )
-                                for article in data
-                            ]
-                            return articles
-
+                            return await response.json()
                         elif response.status == 429:
                             delay = RETRY_BASE_DELAY * (2 ** attempt)
-                            logger.warning(
-                                f"Rate limited for {symbol}, attempt {attempt + 1}/{RETRY_MAX_ATTEMPTS}, "
-                                f"retrying in {delay}s"
-                            )
+                            logger.warning(f"Rate limited for {context_label}, retrying in {delay}s")
                             await asyncio.sleep(delay)
                             continue
-
                         elif response.status == 401:
-                            logger.error(f"Unauthorized: Invalid API key")
                             raise ValueError("Invalid Finnhub API key")
-
                         else:
-                            logger.error(
-                                f"API error for {symbol}: HTTP {response.status}"
-                            )
                             raise Exception(f"HTTP {response.status}")
-
             except asyncio.TimeoutError:
-                logger.warning(
-                    f"Timeout for {symbol}, attempt {attempt + 1}/{RETRY_MAX_ATTEMPTS}"
-                )
                 if attempt == RETRY_MAX_ATTEMPTS - 1:
                     raise
                 await asyncio.sleep(RETRY_BASE_DELAY * (2 ** attempt))
-
-            except aiohttp.ClientError as e:
-                logger.warning(
-                    f"Connection error for {symbol}, attempt {attempt + 1}/{RETRY_MAX_ATTEMPTS}: {e}"
-                )
+            except aiohttp.ClientError:
                 if attempt == RETRY_MAX_ATTEMPTS - 1:
                     raise
                 await asyncio.sleep(RETRY_BASE_DELAY * (2 ** attempt))
+        raise Exception(f"Failed to fetch {context_label} after {RETRY_MAX_ATTEMPTS} attempts")
 
-        raise Exception(f"Failed to fetch news for {symbol} after {RETRY_MAX_ATTEMPTS} attempts")
+    async def fetch_company_news(self, symbol, from_date, to_date):
+        url = f"{FINNHUB_BASE_URL}/company-news"
+        params = {"symbol": symbol, "from": from_date, "to": to_date, "token": self.api_key}
+        data = await self._get_with_retry(url, params, symbol)
+        return [
+            NewsArticle(
+                article_id=str(a.get("id", "")),
+                headline=a.get("headline", ""),
+                source=a.get("source", ""),
+                datetime_=a.get("datetime", 0),
+                url=a.get("url", ""),
+            )
+            for a in data
+        ]
 
+    async def fetch_general_news(self, category="general"):
+        url = f"{FINNHUB_BASE_URL}/news"
+        params = {"category": category, "token": self.api_key}
+        data = await self._get_with_retry(url, params, f"general/{category}")
+        return [
+            NewsArticle(
+                article_id=str(a.get("id", "")),
+                headline=a.get("headline", ""),
+                source=a.get("source", ""),
+                datetime_=a.get("datetime", 0),
+                url=a.get("url", ""),
+            )
+            for a in data
+        ]
 
-# ============================================================================
-# Telegram Notifier
-# ============================================================================
 
 class TelegramNotifier:
-    """Sends notifications to Telegram channel."""
-
-    def __init__(self, bot_token: str, chat_id: str, session: aiohttp.ClientSession):
+    def __init__(self, bot_token, default_chat_id, session):
         self.bot_token = bot_token
-        self.chat_id = chat_id
+        self.default_chat_id = default_chat_id
         self.session = session
 
-    async def send_message(self, text: str) -> bool:
+    async def send_message(self, text, chat_id=None):
         url = f"https://api.telegram.org/bot{self.bot_token}/sendMessage"
         payload = {
-            "chat_id": self.chat_id,
+            "chat_id": chat_id or self.default_chat_id,
             "text": text,
             "parse_mode": "HTML",
         }
-
         try:
             async with self.session.post(
                 url, json=payload, timeout=aiohttp.ClientTimeout(total=10)
@@ -270,29 +213,14 @@ class TelegramNotifier:
             return False
 
 
-# ============================================================================
-# News Monitor (Orchestrator)
-# ============================================================================
-
 class NewsMonitor:
-    """Main orchestrator for news monitoring workflow."""
-
-    def __init__(
-        self,
-        finnhub_client: AsyncFinnhubClient,
-        telegram_notifier: TelegramNotifier,
-        state_manager: StateManager,
-        semaphore: asyncio.Semaphore,
-    ):
+    def __init__(self, finnhub_client, telegram_notifier, semaphore):
         self.finnhub = finnhub_client
         self.telegram = telegram_notifier
-        self.state_manager = state_manager
         self.semaphore = semaphore
 
-    async def run(self, tickers: list[str]) -> None:
+    async def run(self, tickers, state):
         logger.info(f"Starting news monitoring cycle for {len(tickers)} tickers")
-
-        state = self.state_manager.load()
         now = datetime.now(timezone.utc)
 
         state.last_check = now.isoformat()
@@ -303,11 +231,7 @@ class NewsMonitor:
         from_date = now.strftime("%Y-%m-%d")
         to_date = (now + timedelta(days=1)).strftime("%Y-%m-%d")
 
-        tasks = [
-            self._process_ticker(ticker, from_date, to_date, state)
-            for ticker in tickers
-        ]
-
+        tasks = [self._process_ticker(t, from_date, to_date, state) for t in tickers]
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
         for result in results:
@@ -322,22 +246,13 @@ class NewsMonitor:
         if state.tickers_failed:
             logger.warning(f"Failed tickers: {', '.join(state.tickers_failed)}")
 
-        self.state_manager.save(state)
-
-    async def _process_ticker(
-        self, ticker: str, from_date: str, to_date: str, state: MonitorState
-    ) -> bool:
+    async def _process_ticker(self, ticker, from_date, to_date, state):
         try:
             if ticker not in state.seen_news_ids:
                 state.seen_news_ids[ticker] = []
 
             articles = await self.finnhub.fetch_company_news(ticker, from_date, to_date)
-
-            new_articles = [
-                article
-                for article in articles
-                if article.id not in state.seen_news_ids[ticker]
-            ]
+            new_articles = [a for a in articles if a.id not in state.seen_news_ids[ticker]]
 
             for article in new_articles:
                 published = datetime.fromtimestamp(article.datetime, tz=timezone.utc).strftime("%Y-%m-%d %H:%M")
@@ -347,51 +262,78 @@ class NewsMonitor:
                     f"{article.url}"
                 )
                 sent = await self.telegram.send_message(message)
-
                 if sent:
                     state.seen_news_ids[ticker].append(article.id)
-                    logger.debug(f"Notified: {ticker} - {article.headline[:50]}...")
 
             return True
-
         except Exception as e:
             logger.error(f"Error processing {ticker}: {e}")
             state.tickers_failed.append(ticker)
             return False
 
+    async def run_general_news(self, keywords, macro_chat_id, state):
+        logger.info(f"Starting general/macro news scan ({len(keywords)} keywords)")
+        try:
+            articles = await self.finnhub.fetch_general_news(category="general")
+        except Exception as e:
+            logger.error(f"Error fetching general news: {e}")
+            return
 
-# ============================================================================
-# Ticker Management
-# ============================================================================
+        keywords_lower = [k.lower() for k in keywords]
+        matched = 0
 
-def load_tickers(tickers_file: Path = TICKERS_FILE) -> list[str]:
+        for article in articles:
+            if article.id in state.general_seen_ids:
+                continue
+
+            haystack = article.headline.lower()
+            if not any(kw in haystack for kw in keywords_lower):
+                continue
+
+            published = datetime.fromtimestamp(article.datetime, tz=timezone.utc).strftime("%Y-%m-%d %H:%M")
+            message = (
+                f"\U0001F310 {html.escape(article.headline)}\n"
+                f"Източник: {html.escape(article.source)} · {published} UTC\n"
+                f"{article.url}"
+            )
+            sent = await self.telegram.send_message(message, chat_id=macro_chat_id)
+            if sent:
+                state.general_seen_ids.append(article.id)
+                matched += 1
+
+        state.general_seen_ids = state.general_seen_ids[-2000:]
+        logger.info(f"General/macro scan complete: {matched} new matches sent")
+
+
+def load_lines(file_path):
+    if not file_path.exists():
+        return []
+    with open(file_path, "r", encoding="utf-8") as f:
+        return [line.strip() for line in f if line.strip()]
+
+
+def load_tickers(tickers_file=TICKERS_FILE):
     if not tickers_file.exists():
         logger.error(f"Tickers file not found: {tickers_file}")
         raise FileNotFoundError(f"Missing {tickers_file}")
-
-    try:
-        with open(tickers_file, "r", encoding="utf-8") as f:
-            tickers = [line.strip().upper() for line in f if line.strip()]
-        logger.info(f"Loaded {len(tickers)} tickers from {tickers_file}")
-        return tickers
-    except Exception as e:
-        logger.error(f"Error loading tickers: {e}")
-        raise
+    tickers = [line.strip().upper() for line in load_lines(tickers_file)]
+    logger.info(f"Loaded {len(tickers)} tickers from {tickers_file}")
+    return tickers
 
 
-# ============================================================================
-# Main Entry Point
-# ============================================================================
+def load_keywords(keywords_file=KEYWORDS_FILE):
+    keywords = load_lines(keywords_file)
+    logger.info(f"Loaded {len(keywords)} keywords from {keywords_file}")
+    return keywords
 
-async def main() -> None:
+
+async def main():
     if not FINNHUB_API_KEY:
         logger.error("FINNHUB_API_KEY environment variable not set")
         sys.exit(1)
-
     if not TELEGRAM_BOT_TOKEN:
         logger.error("NEWS_5MIN_TELEGRAM_BOT_TOKEN environment variable not set")
         sys.exit(1)
-
     if not TELEGRAM_CHAT_ID:
         logger.error("NEWS_5MIN_TELEGRAM_CHAT_ID environment variable not set")
         sys.exit(1)
@@ -399,30 +341,37 @@ async def main() -> None:
     try:
         tickers = load_tickers()
     except FileNotFoundError:
-        logger.warning(
-            f"Tickers file not found. Falling back to empty list. "
-            f"Create {TICKERS_FILE} with one ticker per line."
-        )
         tickers = []
 
-    if not tickers:
-        logger.warning("No tickers to monitor, exiting")
-        sys.exit(0)
+    keywords = load_keywords()
+    if keywords and not MACRO_CHAT_ID:
+        logger.warning("NEWS_5MIN_TELEGRAM_MACRO_CHAT_ID not set - skipping general/macro scan")
 
     semaphore = asyncio.Semaphore(SEMAPHORE_LIMIT)
     state_manager = StateManager()
+    state = state_manager.load()
 
     async with aiohttp.ClientSession() as session:
         async with AsyncFinnhubClient(FINNHUB_API_KEY, semaphore) as finnhub_client:
             telegram_notifier = TelegramNotifier(TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, session)
-            monitor = NewsMonitor(finnhub_client, telegram_notifier, state_manager, semaphore)
+            monitor = NewsMonitor(finnhub_client, telegram_notifier, semaphore)
 
             try:
-                await monitor.run(tickers)
+                if tickers:
+                    await monitor.run(tickers, state)
+                else:
+                    logger.warning("No tickers to monitor")
+
+                if keywords and MACRO_CHAT_ID:
+                    await monitor.run_general_news(keywords, MACRO_CHAT_ID, state)
+
                 logger.info("News monitoring cycle completed successfully")
             except Exception as e:
                 logger.error(f"Fatal error during monitoring: {e}", exc_info=True)
+                state_manager.save(state)
                 sys.exit(1)
+
+    state_manager.save(state)
 
 
 if __name__ == "__main__":
