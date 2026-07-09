@@ -13,6 +13,7 @@ import json
 import logging
 import os
 import sys
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
@@ -34,6 +35,9 @@ SEMAPHORE_LIMIT = 10
 REQUEST_TIMEOUT = 10
 RETRY_MAX_ATTEMPTS = 3
 RETRY_BASE_DELAY = 1
+
+TELEGRAM_MIN_INTERVAL = 0.35  # мин. пауза между съобщения (сек) - предпазва от 429
+TELEGRAM_MAX_RETRIES = 3
 
 LOG_FORMAT = "%(asctime)s | %(levelname)-5s | %(name)s | %(message)s"
 logging.basicConfig(level=logging.INFO, format=LOG_FORMAT, stream=sys.stdout)
@@ -187,10 +191,14 @@ class AsyncFinnhubClient:
 
 
 class TelegramNotifier:
+    """Sends notifications to Telegram, serialized + throttled to avoid 429s."""
+
     def __init__(self, bot_token, default_chat_id, session):
         self.bot_token = bot_token
         self.default_chat_id = default_chat_id
         self.session = session
+        self._lock = asyncio.Lock()
+        self._last_send_ts = 0.0
 
     async def send_message(self, text, chat_id=None):
         url = f"https://api.telegram.org/bot{self.bot_token}/sendMessage"
@@ -199,18 +207,44 @@ class TelegramNotifier:
             "text": text,
             "parse_mode": "HTML",
         }
-        try:
-            async with self.session.post(
-                url, json=payload, timeout=aiohttp.ClientTimeout(total=10)
-            ) as response:
-                if response.status == 200:
-                    return True
-                else:
-                    logger.error(f"Telegram API error: HTTP {response.status}")
+
+        for attempt in range(TELEGRAM_MAX_RETRIES):
+            async with self._lock:
+                elapsed = time.monotonic() - self._last_send_ts
+                if elapsed < TELEGRAM_MIN_INTERVAL:
+                    await asyncio.sleep(TELEGRAM_MIN_INTERVAL - elapsed)
+
+                try:
+                    async with self.session.post(
+                        url, json=payload, timeout=aiohttp.ClientTimeout(total=10)
+                    ) as response:
+                        self._last_send_ts = time.monotonic()
+
+                        if response.status == 200:
+                            return True
+
+                        if response.status == 429:
+                            try:
+                                body = await response.json()
+                                retry_after = body.get("parameters", {}).get("retry_after", 2)
+                            except Exception:
+                                retry_after = 2
+                            logger.warning(
+                                f"Telegram 429, waiting {retry_after}s "
+                                f"(attempt {attempt + 1}/{TELEGRAM_MAX_RETRIES})"
+                            )
+                            await asyncio.sleep(retry_after)
+                            continue
+
+                        logger.error(f"Telegram API error: HTTP {response.status}")
+                        return False
+
+                except Exception as e:
+                    logger.error(f"Error sending Telegram message: {e}")
                     return False
-        except Exception as e:
-            logger.error(f"Error sending Telegram message: {e}")
-            return False
+
+        logger.error("Telegram send failed after retries (persistent 429)")
+        return False
 
 
 class NewsMonitor:
