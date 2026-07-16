@@ -1,13 +1,8 @@
 {
-  "last_check": "2026-07-16T22:03:45.553554+00:00",
+  "last_check": "2026-07-16T22:07:58.280424+00:00",
   "tickers_processed": 57,
-  "tickers_succeeded": 53,
-  "tickers_failed": [
-    "TRV",
-    "RPRX",
-    "IDA",
-    "GEV"
-  ],
+  "tickers_succeeded": 57,
+  "tickers_failed": [],
   "seen_news_ids": {
     "TICKER,NAME,CATEGORY,EXCHANGE": [],
     "4GLD,XETRA-GOLD ETC,ANCHOR,DEUTSCHE B\u0413\u00b6RSE": [],
