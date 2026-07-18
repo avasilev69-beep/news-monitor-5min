@@ -2,8 +2,6 @@ name: News Monitor 5min
 
 on:
   workflow_dispatch: {}
-  schedule:
-    - cron: '0 * * * *'   # почасов резервен старт
 
 permissions:
   contents: write
