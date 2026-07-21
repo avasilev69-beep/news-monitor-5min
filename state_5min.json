@@ -1,10 +1,8 @@
 {
-  "last_check": "2026-07-21T18:32:55.957576+00:00",
+  "last_check": "2026-07-21T18:38:01.107445+00:00",
   "tickers_processed": 57,
-  "tickers_succeeded": 56,
-  "tickers_failed": [
-    "DBXD"
-  ],
+  "tickers_succeeded": 57,
+  "tickers_failed": [],
   "seen_news_ids": {
     "TICKER,NAME,CATEGORY,EXCHANGE": [],
     "4GLD,XETRA-GOLD ETC,ANCHOR,DEUTSCHE B\u0413\u00b6RSE": [],
@@ -783,7 +781,8 @@
       "140973238",
       "140973239",
       "140973198",
-      "140973216"
+      "140973216",
+      "140973837"
     ],
     "CRDO": [
       "140842366",
@@ -2032,7 +2031,8 @@
       "140959857",
       "140960423",
       "140962215",
-      "140962517"
+      "140962517",
+      "140973740"
     ],
     "EXEL": [
       "140842126",
