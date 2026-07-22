@@ -1,19 +1,8 @@
 {
-  "last_check": "2026-07-22T20:53:40.659818+00:00",
+  "last_check": "2026-07-22T20:57:57.245118+00:00",
   "tickers_processed": 57,
-  "tickers_succeeded": 47,
-  "tickers_failed": [
-    "4GLD",
-    "DBXD",
-    "SAP",
-    "SIE",
-    "EXXT",
-    "WSLV",
-    "DUK",
-    "JNJ",
-    "RPRX",
-    "DRS"
-  ],
+  "tickers_succeeded": 57,
+  "tickers_failed": [],
   "seen_news_ids": {
     "TICKER,NAME,CATEGORY,EXCHANGE": [],
     "4GLD,XETRA-GOLD ETC,ANCHOR,DEUTSCHE B\u0413\u00b6RSE": [],
