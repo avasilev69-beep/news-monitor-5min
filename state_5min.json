@@ -1,10 +1,8 @@
 {
-  "last_check": "2026-07-28T13:48:03.368375+00:00",
+  "last_check": "2026-07-28T13:53:04.682854+00:00",
   "tickers_processed": 57,
-  "tickers_succeeded": 56,
-  "tickers_failed": [
-    "PATH"
-  ],
+  "tickers_succeeded": 57,
+  "tickers_failed": [],
   "seen_news_ids": {
     "TICKER,NAME,CATEGORY,EXCHANGE": [],
     "4GLD,XETRA-GOLD ETC,ANCHOR,DEUTSCHE B\u0413\u00b6RSE": [],
@@ -3153,7 +3151,8 @@
       "141031220",
       "141041896",
       "141041897",
-      "141042029"
+      "141042029",
+      "141042267"
     ],
     "ILMN": [
       "140839787",
