@@ -1,11 +1,15 @@
 {
-  "last_check": "2026-08-03T19:47:58.542543+00:00",
+  "last_check": "2026-08-03T19:53:04.537672+00:00",
   "tickers_processed": 57,
-  "tickers_succeeded": 54,
+  "tickers_succeeded": 50,
   "tickers_failed": [
+    "EXXT",
+    "DBXD",
+    "WSLV",
+    "SAP",
+    "IWDA",
     "4GLD",
-    "ASML",
-    "NVD"
+    "AIR"
   ],
   "seen_news_ids": {
     "TICKER,NAME,CATEGORY,EXCHANGE": [],
