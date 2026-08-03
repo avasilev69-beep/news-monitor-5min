@@ -1,34 +1,8 @@
 {
-  "last_check": "2026-08-03T21:08:00.261216+00:00",
+  "last_check": "2026-08-03T21:13:03.640419+00:00",
   "tickers_processed": 57,
-  "tickers_succeeded": 32,
-  "tickers_failed": [
-    "AIR",
-    "ALV",
-    "MC",
-    "SPOT",
-    "META",
-    "SNOW",
-    "PATH",
-    "EXEL",
-    "MD",
-    "RPRX",
-    "JNJ",
-    "TRV",
-    "AEP",
-    "IDA",
-    "DUK",
-    "GEV",
-    "LNT",
-    "IBKR",
-    "RGTI",
-    "IONQ",
-    "ALAB",
-    "CRWV",
-    "HUT",
-    "IREN",
-    "KEEL"
-  ],
+  "tickers_succeeded": 57,
+  "tickers_failed": [],
   "seen_news_ids": {
     "TICKER,NAME,CATEGORY,EXCHANGE": [],
     "4GLD,XETRA-GOLD ETC,ANCHOR,DEUTSCHE B\u0413\u00b6RSE": [],
@@ -1784,7 +1758,8 @@
       "141052661",
       "141082131",
       "141085655",
-      "141100502"
+      "141100502",
+      "141102456"
     ],
     "IBKR": [
       "140838906",
@@ -2603,7 +2578,8 @@
       "141098944",
       "141098784",
       "141100212",
-      "141100797"
+      "141100797",
+      "141102456"
     ],
     "AXON": [
       "140838913",
@@ -4574,7 +4550,8 @@
       "141046952",
       "141053702",
       "141058708",
-      "141065062"
+      "141065062",
+      "141102419"
     ],
     "MD": [
       "140897531",
