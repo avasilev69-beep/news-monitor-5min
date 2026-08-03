@@ -1,10 +1,26 @@
 {
-  "last_check": "2026-08-03T19:27:56.458848+00:00",
+  "last_check": "2026-08-03T19:33:05.414551+00:00",
   "tickers_processed": 57,
-  "tickers_succeeded": 55,
+  "tickers_succeeded": 39,
   "tickers_failed": [
-    "ATAI",
-    "XLFNT"
+    "AIR",
+    "SPPW",
+    "EXXT",
+    "SAP",
+    "WSLV",
+    "SIE",
+    "VZLC",
+    "4GLD",
+    "IWDA",
+    "IONQ",
+    "IDA",
+    "GEV",
+    "RGTI",
+    "NBIS",
+    "CRWV",
+    "KEEL",
+    "HUT",
+    "MRNA"
   ],
   "seen_news_ids": {
     "TICKER,NAME,CATEGORY,EXCHANGE": [],
@@ -5590,6 +5606,7 @@
     "8290476",
     "8290477",
     "8292145",
-    "8292354"
+    "8292354",
+    "8291500"
   ]
 }
