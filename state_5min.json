@@ -1,13 +1,16 @@
 {
-  "last_check": "2026-08-03T20:48:06.637917+00:00",
+  "last_check": "2026-08-03T20:52:58.188011+00:00",
   "tickers_processed": 57,
-  "tickers_succeeded": 52,
+  "tickers_succeeded": 49,
   "tickers_failed": [
     "DBXD",
     "AIR",
-    "IWDA",
-    "4GLD",
-    "ALAB"
+    "PATH",
+    "JNJ",
+    "TRV",
+    "LNT",
+    "NBIS",
+    "MRNA"
   ],
   "seen_news_ids": {
     "TICKER,NAME,CATEGORY,EXCHANGE": [],
