@@ -1,18 +1,10 @@
 {
-  "last_check": "2026-08-03T19:23:04.798784+00:00",
+  "last_check": "2026-08-03T19:27:56.458848+00:00",
   "tickers_processed": 57,
-  "tickers_succeeded": 47,
+  "tickers_succeeded": 55,
   "tickers_failed": [
-    "WSLV",
-    "SPPW",
-    "EXXT",
-    "AIR",
-    "KER",
-    "ADBE",
-    "MC",
-    "ALV",
-    "4GLD",
-    "ILMN"
+    "ATAI",
+    "XLFNT"
   ],
   "seen_news_ids": {
     "TICKER,NAME,CATEGORY,EXCHANGE": [],
