@@ -1,8 +1,16 @@
 {
-  "last_check": "2026-08-03T15:23:01.303353+00:00",
+  "last_check": "2026-08-03T15:28:00.686641+00:00",
   "tickers_processed": 57,
-  "tickers_succeeded": 57,
-  "tickers_failed": [],
+  "tickers_succeeded": 50,
+  "tickers_failed": [
+    "SPPW",
+    "IONQ",
+    "ALAB",
+    "CRWV",
+    "KEEL",
+    "ATAI",
+    "MRNA"
+  ],
   "seen_news_ids": {
     "TICKER,NAME,CATEGORY,EXCHANGE": [],
     "4GLD,XETRA-GOLD ETC,ANCHOR,DEUTSCHE B\u0413\u00b6RSE": [],
