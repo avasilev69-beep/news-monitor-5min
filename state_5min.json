@@ -1,8 +1,32 @@
 {
-  "last_check": "2026-08-03T19:08:12.009455+00:00",
+  "last_check": "2026-08-03T19:13:00.625403+00:00",
   "tickers_processed": 57,
-  "tickers_succeeded": 57,
-  "tickers_failed": [],
+  "tickers_succeeded": 34,
+  "tickers_failed": [
+    "AMAT",
+    "4GLD",
+    "SPOT",
+    "EXXT",
+    "WSLV",
+    "DBXD",
+    "META",
+    "SPPW",
+    "SIE",
+    "SAP",
+    "SPNT",
+    "FHB",
+    "IWDA",
+    "AIR",
+    "BPOP",
+    "VZLC",
+    "GEV",
+    "RGTI",
+    "ATAI",
+    "IBKR",
+    "MRNA",
+    "HUT",
+    "KEEL"
+  ],
   "seen_news_ids": {
     "TICKER,NAME,CATEGORY,EXCHANGE": [],
     "4GLD,XETRA-GOLD ETC,ANCHOR,DEUTSCHE B\u0413\u00b6RSE": [],
@@ -2905,7 +2929,8 @@
       "141101090",
       "141101091",
       "141100720",
-      "141101093"
+      "141101093",
+      "139930067"
     ],
     "ALAB": [
       "140839026",
@@ -4406,7 +4431,8 @@
       "141094836",
       "141095282",
       "141096188",
-      "141101354"
+      "141101354",
+      "141101776"
     ],
     "MRNA": [
       "140839747",
