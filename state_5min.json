@@ -1,23 +1,8 @@
 {
-  "last_check": "2026-08-06T22:03:11.308595+00:00",
+  "last_check": "2026-08-06T22:08:04.830177+00:00",
   "tickers_processed": 57,
-  "tickers_succeeded": 43,
-  "tickers_failed": [
-    "ALV",
-    "ASML",
-    "L0CK",
-    "SLDE",
-    "MD",
-    "AHR",
-    "VZ",
-    "FHB",
-    "RPRX",
-    "IDA",
-    "DUK",
-    "TRV",
-    "JNJ",
-    "AEP"
-  ],
+  "tickers_succeeded": 57,
+  "tickers_failed": [],
   "seen_news_ids": {
     "TICKER,NAME,CATEGORY,EXCHANGE": [],
     "4GLD,XETRA-GOLD ETC,ANCHOR,DEUTSCHE B\u0413\u00b6RSE": [],
