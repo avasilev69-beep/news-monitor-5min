@@ -1,24 +1,8 @@
 {
-  "last_check": "2026-08-06T20:18:08.441481+00:00",
+  "last_check": "2026-08-06T21:01:29.422818+00:00",
   "tickers_processed": 57,
-  "tickers_succeeded": 42,
-  "tickers_failed": [
-    "ILMN",
-    "INCY",
-    "SNOW",
-    "FHB",
-    "PATH",
-    "BPOP",
-    "SPNT",
-    "MD",
-    "EXEL",
-    "SLDE",
-    "KEEL",
-    "XLFNT",
-    "SLDB",
-    "ATAI",
-    "MRNA"
-  ],
+  "tickers_succeeded": 57,
+  "tickers_failed": [],
   "seen_news_ids": {
     "TICKER,NAME,CATEGORY,EXCHANGE": [],
     "4GLD,XETRA-GOLD ETC,ANCHOR,DEUTSCHE B\u0413\u00b6RSE": [],
@@ -1904,7 +1888,9 @@
       "141137130",
       "141138013",
       "141138057",
-      "141138058"
+      "141138058",
+      "141138854",
+      "141139033"
     ],
     "CRDO": [
       "140842366",
@@ -6321,6 +6307,8 @@
     "8307657",
     "8307654",
     "8307651",
-    "8307650"
+    "8307650",
+    "8308285",
+    "8308185"
   ]
 }
