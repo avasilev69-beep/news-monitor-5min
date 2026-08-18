@@ -1,29 +1,8 @@
 {
-  "last_check": "2026-08-18T14:58:44.376092+00:00",
+  "last_check": "2026-08-18T15:03:08.086714+00:00",
   "tickers_processed": 57,
-  "tickers_succeeded": 37,
-  "tickers_failed": [
-    "IWDA",
-    "SPPW",
-    "VZLC",
-    "EXXT",
-    "AIR",
-    "WSLV",
-    "ALV",
-    "4GLD",
-    "KER",
-    "MC",
-    "ASML",
-    "L0CK",
-    "ADBE",
-    "NVD",
-    "META",
-    "SPOT",
-    "AMAT",
-    "SNOW",
-    "AXON",
-    "HOOD"
-  ],
+  "tickers_succeeded": 57,
+  "tickers_failed": [],
   "seen_news_ids": {
     "TICKER,NAME,CATEGORY,EXCHANGE": [],
     "4GLD,XETRA-GOLD ETC,ANCHOR,DEUTSCHE B\u0413\u00b6RSE": [],
@@ -2224,7 +2203,8 @@
       "141241672",
       "141245046",
       "141245671",
-      "141245854"
+      "141245854",
+      "141245983"
     ],
     "CRDO": [
       "140842366",
