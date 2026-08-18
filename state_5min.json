@@ -1,10 +1,8 @@
 {
-  "last_check": "2026-08-18T14:52:57.440926+00:00",
+  "last_check": "2026-08-18T14:58:07.445731+00:00",
   "tickers_processed": 57,
-  "tickers_succeeded": 56,
-  "tickers_failed": [
-    "BPOP"
-  ],
+  "tickers_succeeded": 57,
+  "tickers_failed": [],
   "seen_news_ids": {
     "TICKER,NAME,CATEGORY,EXCHANGE": [],
     "4GLD,XETRA-GOLD ETC,ANCHOR,DEUTSCHE B\u0413\u00b6RSE": [],
