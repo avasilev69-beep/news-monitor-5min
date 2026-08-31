@@ -1,28 +1,8 @@
 {
-  "last_check": "2026-08-31T11:48:00.718105+00:00",
+  "last_check": "2026-08-31T11:53:01.643393+00:00",
   "tickers_processed": 57,
-  "tickers_succeeded": 38,
-  "tickers_failed": [
-    "SIE",
-    "WSLV",
-    "SAP",
-    "EXXT",
-    "ADBE",
-    "NVD",
-    "MC",
-    "AMAT",
-    "AXON",
-    "INCY",
-    "PATH",
-    "SLDE",
-    "AHR",
-    "VZ",
-    "TRV",
-    "MD",
-    "JNJ",
-    "AEP",
-    "IONQ"
-  ],
+  "tickers_succeeded": 57,
+  "tickers_failed": [],
   "seen_news_ids": {
     "TICKER,NAME,CATEGORY,EXCHANGE": [],
     "4GLD,XETRA-GOLD ETC,ANCHOR,DEUTSCHE B\u0413\u00b6RSE": [],
@@ -2395,7 +2375,8 @@
       "141344651",
       "141346912",
       "141349028",
-      "141349722"
+      "141349722",
+      "141354030"
     ],
     "CRDO": [
       "140842366",
