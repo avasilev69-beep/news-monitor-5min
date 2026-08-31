@@ -1,22 +1,25 @@
 {
-  "last_check": "2026-08-31T20:38:00.672955+00:00",
+  "last_check": "2026-08-31T20:42:59.039271+00:00",
   "tickers_processed": 57,
-  "tickers_succeeded": 43,
+  "tickers_succeeded": 40,
   "tickers_failed": [
-    "SIE",
-    "WSLV",
     "SAP",
-    "VZLC",
-    "4GLD",
-    "SPPW",
-    "MC",
-    "KER",
-    "SNOW",
-    "BPOP",
-    "SLDE",
-    "VZ",
-    "NBIS",
-    "HUT"
+    "SIE",
+    "DBXD",
+    "IWDA",
+    "AIR",
+    "WSLV",
+    "ALV",
+    "ADBE",
+    "L0CK",
+    "AMAT",
+    "PATH",
+    "INCY",
+    "FHB",
+    "CRWV",
+    "MRNA",
+    "SLDB",
+    "XLFNT"
   ],
   "seen_news_ids": {
     "TICKER,NAME,CATEGORY,EXCHANGE": [],
@@ -2396,7 +2399,8 @@
       "141355465",
       "141355743",
       "141356039",
-      "141356512"
+      "141356512",
+      "141356708"
     ],
     "CRDO": [
       "140842366",
