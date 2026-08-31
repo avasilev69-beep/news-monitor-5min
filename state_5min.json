@@ -1,40 +1,8 @@
 {
-  "last_check": "2026-08-31T20:07:57.003476+00:00",
+  "last_check": "2026-08-31T20:12:56.983574+00:00",
   "tickers_processed": 57,
-  "tickers_succeeded": 26,
-  "tickers_failed": [
-    "SIE",
-    "SAP",
-    "VZLC",
-    "4GLD",
-    "EXXT",
-    "DBXD",
-    "SPPW",
-    "WSLV",
-    "AXON",
-    "L0CK",
-    "META",
-    "KER",
-    "MC",
-    "SNOW",
-    "ADBE",
-    "AMAT",
-    "VZ",
-    "SLDE",
-    "TRV",
-    "INCY",
-    "RPRX",
-    "FHB",
-    "IONQ",
-    "DUK",
-    "IBKR",
-    "CRDO",
-    "ALAB",
-    "IDA",
-    "IREN",
-    "HUT",
-    "MRNA"
-  ],
+  "tickers_succeeded": 57,
+  "tickers_failed": [],
   "seen_news_ids": {
     "TICKER,NAME,CATEGORY,EXCHANGE": [],
     "4GLD,XETRA-GOLD ETC,ANCHOR,DEUTSCHE B\u0413\u00b6RSE": [],
@@ -2412,7 +2380,8 @@
       "141354363",
       "141355465",
       "141355743",
-      "141356039"
+      "141356039",
+      "141356512"
     ],
     "CRDO": [
       "140842366",
@@ -5391,7 +5360,8 @@
       "141353452",
       "141354363",
       "141354901",
-      "141356327"
+      "141356327",
+      "141356513"
     ],
     "HUT": [
       "140862520",
