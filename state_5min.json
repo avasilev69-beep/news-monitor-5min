@@ -1,12 +1,8 @@
 {
-  "last_check": "2026-09-03T21:47:55.774843+00:00",
+  "last_check": "2026-09-03T21:53:03.900004+00:00",
   "tickers_processed": 57,
-  "tickers_succeeded": 54,
-  "tickers_failed": [
-    "IDA",
-    "LNT",
-    "FHB"
-  ],
+  "tickers_succeeded": 57,
+  "tickers_failed": [],
   "seen_news_ids": {
     "TICKER,NAME,CATEGORY,EXCHANGE": [],
     "4GLD,XETRA-GOLD ETC,ANCHOR,DEUTSCHE B\u0413\u00b6RSE": [],
@@ -2542,7 +2538,8 @@
       "141403749",
       "141403752",
       "141404011",
-      "141404290"
+      "141404290",
+      "141405015"
     ],
     "CRDO": [
       "140842366",
