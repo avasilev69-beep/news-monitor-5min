@@ -1,8 +1,21 @@
 {
-  "last_check": "2026-09-12T19:32:54.723417+00:00",
+  "last_check": "2026-09-12T19:42:55.315184+00:00",
   "tickers_processed": 57,
-  "tickers_succeeded": 57,
-  "tickers_failed": [],
+  "tickers_succeeded": 45,
+  "tickers_failed": [
+    "EXEL",
+    "PATH",
+    "HOOD",
+    "INCY",
+    "ILMN",
+    "SPNT",
+    "FHB",
+    "SLDE",
+    "MD",
+    "ATAI",
+    "XLFNT",
+    "SLDB"
+  ],
   "seen_news_ids": {
     "TICKER,NAME,CATEGORY,EXCHANGE": [],
     "4GLD,XETRA-GOLD ETC,ANCHOR,DEUTSCHE B\u0413\u00b6RSE": [],
